@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.somecompany.danielsims.playingaroundwithretrofit.Models.MatchList;
 import com.somecompany.danielsims.playingaroundwithretrofit.Models.Summoner;
 import com.somecompany.danielsims.playingaroundwithretrofit.Models.SummonerRank;
 import com.somecompany.danielsims.playingaroundwithretrofit.RetrofitInterace.RiotApiInterface;
@@ -25,6 +26,10 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String RIOT_BASE_URL = "https://euw1.api.riotgames.com/";
 
+    private Summoner mSummoner = null;
+    private SummonerRank mSummonerRank = null;
+    private MatchList mMatchList = null;
+
     private TextView mFoundSummonerName;
     private TextView mFoundSummonerLevel;
 
@@ -35,6 +40,9 @@ public class MainActivity extends AppCompatActivity {
 
     private Button mSearchButton;
     private TextView mSummonerNameTextView;
+
+    private Retrofit mRetrofit;
+    private RiotApiInterface mRiotApiInterface;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,49 +64,42 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         mSummonerNameTextView = findViewById(R.id.SummonerName);
-    }
 
-    Summoner mSummoner = null;
-    SummonerRank mSummonerRank = null;
-
-    private void getSummonerFromRiot() {
         Gson gson = new GsonBuilder().create();
-        Retrofit retrofit = new Retrofit.Builder()
+        mRetrofit = new Retrofit.Builder()
                 .baseUrl(RIOT_BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
 
-        Summoner summoner = null;
-        SummonerRank summonerRank = null;
+        mRiotApiInterface = mRetrofit.create(RiotApiInterface.class);;
+    }
 
-        final RiotApiInterface apiService = retrofit.create(RiotApiInterface.class);
-        Call<Summoner> summonerCall = apiService.getSummonerByName(mSummonerNameTextView.getText().toString());
+    private void getSummonerFromRiot() {
+
         try
         {
-            summonerCall.enqueue(new Callback<Summoner>() {
+            CollectionSummonerInformationAndLaunchDetailsActivity();
+        } catch (Exception e) {
+
+        }
+    }
+
+    private void CollectionSummonerInformationAndLaunchDetailsActivity(){
+        if(mSummonerNameTextView.getText() != "")
+        {
+            final RiotApiInterface apiService = mRetrofit.create(RiotApiInterface.class);
+            Call<Summoner> summonerCall = apiService.getSummonerByName(mSummonerNameTextView.getText().toString());
+
+            summonerCall.enqueue( new Callback<Summoner>() {
                 @Override
                 public void onResponse(Call<Summoner> call, Response<Summoner> response) {
-                    int statusCode = response.code();
-                    if(statusCode == 200) {
+                    if(response.code() == 200) {
                         final Summoner summoner = response.body();
                         mSummoner = summoner;
 
-                        Call<SummonerRank[]> summonerRankCall = apiService.getSummonerRankByAccountId(summoner.getId());
-                        summonerRankCall.enqueue(new Callback<SummonerRank[]>() {
-                            @Override
-                            public void onResponse(Call<SummonerRank[]> call, Response<SummonerRank[]> response) {
-                                SummonerRank[] s = response.body();
-                                mSummonerRank = s[0];
-
-                                launchSummonerDetailsActivity();
-
-                            }
-
-                            @Override
-                            public void onFailure(Call<SummonerRank[]> call, Throwable t) {
-
-                            }
-                        });
+                        if(mSummoner != null){
+                            GetSummonerRankInformation();
+                        }
                     }
                 }
 
@@ -107,8 +108,51 @@ public class MainActivity extends AppCompatActivity {
 
                 }
             });
-        } catch (Exception e) { }
+        }
+    }
 
+    private void GetSummonerRankInformation(){
+        Call<SummonerRank[]> summonerRankCall = mRiotApiInterface.getSummonerRankByAccountId(mSummoner.getId());
+        summonerRankCall.enqueue(new Callback<SummonerRank[]>() {
+            @Override
+            public void onResponse(Call<SummonerRank[]> call, Response<SummonerRank[]> response) {
+                if(response.code() == 200){
+                    SummonerRank[] s = response.body();
+                    mSummonerRank = s[0];
+
+                    if(mSummonerRank != null){
+                        GetSummonerMatchListInformation();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<SummonerRank[]> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void GetSummonerMatchListInformation(){
+        final int beginIndex = 0;
+        final int endIndex = 5;
+        Call<MatchList> matchListCall = mRiotApiInterface.getRecentMatchListForSummonerId(mSummoner.getAccountId(), beginIndex, endIndex);
+        matchListCall.enqueue(new Callback<MatchList>() {
+            @Override
+            public void onResponse(Call<MatchList> call, Response<MatchList> response) {
+                if(response.code() == 200){
+                    MatchList matchlist = response.body();
+                    mMatchList = matchlist;
+                }
+
+                launchSummonerDetailsActivity();
+            }
+
+            @Override
+            public void onFailure(Call<MatchList> call, Throwable t) {
+
+            }
+        });
     }
 
     private void launchSummonerDetailsActivity(){
