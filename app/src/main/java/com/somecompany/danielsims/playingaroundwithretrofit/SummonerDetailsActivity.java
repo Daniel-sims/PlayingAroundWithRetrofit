@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
+import com.somecompany.danielsims.playingaroundwithretrofit.Models.MatchList;
 import com.somecompany.danielsims.playingaroundwithretrofit.Models.Summoner;
 import com.somecompany.danielsims.playingaroundwithretrofit.Models.SummonerRank;
 
@@ -18,6 +19,7 @@ public class SummonerDetailsActivity extends AppCompatActivity {
 
     private Summoner mSummoner;
     private SummonerRank mSummonerRank;
+    private MatchList mMatchList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +35,7 @@ public class SummonerDetailsActivity extends AppCompatActivity {
 
         mSummoner = getIntent().getParcelableExtra("summoner");
         mSummonerRank = getIntent().getParcelableExtra("summonerrank");
+        mMatchList = getIntent().getParcelableExtra("matchlist");
 
         if(mSummoner != null && mSummonerRank != null){
             mFoundSummonerName.setText(mSummoner.getName());

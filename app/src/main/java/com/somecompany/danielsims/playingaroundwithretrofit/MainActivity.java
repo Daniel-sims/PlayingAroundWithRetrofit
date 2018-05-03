@@ -159,6 +159,7 @@ public class MainActivity extends AppCompatActivity {
         Intent startSummonerDetailsActivityIntent = new Intent(this, SummonerDetailsActivity.class);
         startSummonerDetailsActivityIntent.putExtra("summoner", mSummoner);
         startSummonerDetailsActivityIntent.putExtra("summonerrank", mSummonerRank);
+        startSummonerDetailsActivityIntent.putExtra("matchlist", mMatchList);
 
         startActivity(startSummonerDetailsActivityIntent);
     }

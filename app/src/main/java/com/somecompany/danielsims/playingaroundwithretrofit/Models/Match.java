@@ -1,10 +1,22 @@
 package com.somecompany.danielsims.playingaroundwithretrofit.Models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Match {
+public class Match implements Parcelable {
 
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public Match createFromParcel(Parcel in) {
+            return new Match(in);
+        }
+
+        public Match[] newArray(int size) {
+            return new Match[size];
+        }
+    };
 
     @SerializedName("champion")
     @Expose
@@ -52,6 +64,25 @@ public class Match {
 
     public void setSeason(Integer season) {
         this.season = season;
+    }
+
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(getChampion());
+        dest.writeInt(getQueue());
+        dest.writeString(getRole());
+        dest.writeInt(getSeason());
+    }
+
+    public Match(Parcel in){
+        setChampion(in.readInt());
+        setQueue(in.readInt());
+        setRole(in.readString());
+        setSeason(in.readInt());
     }
 
 }
