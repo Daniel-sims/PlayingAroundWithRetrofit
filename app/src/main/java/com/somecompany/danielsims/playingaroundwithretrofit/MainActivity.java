@@ -14,6 +14,11 @@ import com.somecompany.danielsims.playingaroundwithretrofit.Models.Summoner;
 import com.somecompany.danielsims.playingaroundwithretrofit.Models.SummonerRank;
 import com.somecompany.danielsims.playingaroundwithretrofit.RetrofitInterace.RiotApiInterface;
 
+import java.io.IOException;
+
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -66,8 +71,22 @@ public class MainActivity extends AppCompatActivity {
         mSummonerNameTextView = findViewById(R.id.SummonerName);
 
         Gson gson = new GsonBuilder().create();
+        OkHttpClient.Builder okhttpBuilder = new OkHttpClient.Builder();
+
+        okhttpBuilder.addInterceptor(new Interceptor() {
+            @Override
+            public okhttp3.Response intercept(Chain chain) throws IOException {
+                Request request = chain.request();
+                //API keys in code, what could go wrong
+                Request.Builder newRequest = request.newBuilder().addHeader("X-Riot-Token", "RGAPI-5f9692a9-1a98-4aa3-bccc-58eb95fa955e");
+
+                return chain.proceed(newRequest.build());
+            }
+        });
+
         mRetrofit = new Retrofit.Builder()
                 .baseUrl(RIOT_BASE_URL)
+                .client(okhttpBuilder.build())
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
 
