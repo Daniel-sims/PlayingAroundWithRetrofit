@@ -1,13 +1,23 @@
 package com.somecompany.danielsims.playingaroundwithretrofit.Models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Summoner{
+public class Summoner implements Parcelable {
 
-    @SerializedName("profileIconId")
-    @Expose
-    private Integer profileIconId;
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public Summoner createFromParcel(Parcel in) {
+            return new Summoner(in);
+        }
+
+        public Summoner[] newArray(int size) {
+            return new Summoner[size];
+        }
+    };
+
     @SerializedName("name")
     @Expose
     private String name;
@@ -20,14 +30,6 @@ public class Summoner{
     @SerializedName("id")
     @Expose
     private Integer id;
-
-    public Integer getProfileIconId() {
-        return profileIconId;
-    }
-
-    public void setProfileIconId(Integer profileIconId) {
-        this.profileIconId = profileIconId;
-    }
 
     public String getName() {
         return name;
@@ -59,5 +61,25 @@ public class Summoner{
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(getName());
+        dest.writeInt(getSummonerLevel());
+        dest.writeInt(getAccountId());
+        dest.writeInt(getId());
+    }
+
+    public Summoner(Parcel in){
+        setName(in.readString());
+        setSummonerLevel(in.readInt());
+        setAccountId(in.readInt());
+        setId(in.readInt());
     }
 }
