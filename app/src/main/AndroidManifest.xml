@@ -21,11 +21,6 @@
         <activity android:name=".SummonerDetailsActivity">
 
         </activity>
-        <service
-            android:name=".Services.RiotIntentService"
-            android:label="Riot intent service"
-            android:exported="false">
-        </service>
     </application>
 
 </manifest>

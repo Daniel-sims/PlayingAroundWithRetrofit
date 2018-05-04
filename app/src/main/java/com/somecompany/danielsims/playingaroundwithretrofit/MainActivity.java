@@ -35,14 +35,6 @@ public class MainActivity extends AppCompatActivity {
     private SummonerRank mSummonerRank = null;
     private MatchList mMatchList = null;
 
-    private TextView mFoundSummonerName;
-    private TextView mFoundSummonerLevel;
-
-    private TextView mFoundSummonerTier;
-    private TextView mFoundSummonerDivision;
-    private TextView mFoundSummonerLp;
-
-
     private Button mSearchButton;
     private TextView mSummonerNameTextView;
 
@@ -54,13 +46,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mFoundSummonerName = findViewById(R.id.FoundSummonerName);
-        mFoundSummonerLevel = findViewById(R.id.FoundSummonerLevel);
-
-        mFoundSummonerTier = findViewById(R.id.FoundSummonerTier);
-        mFoundSummonerDivision = findViewById(R.id.FoundSummonerDivision);
-        mFoundSummonerLp = findViewById(R.id.FoundSummonerLp);
-
         mSearchButton = findViewById(R.id.Search);
         mSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,12 +53,12 @@ public class MainActivity extends AppCompatActivity {
                 getSummonerFromRiot();
             }
         });
-        mSummonerNameTextView = findViewById(R.id.SummonerName);
+        mSummonerNameTextView = findViewById(R.id.summoner_name);
 
         Gson gson = new GsonBuilder().create();
-        OkHttpClient.Builder okhttpBuilder = new OkHttpClient.Builder();
+        OkHttpClient.Builder okHttpBuilder = new OkHttpClient.Builder();
 
-        okhttpBuilder.addInterceptor(new Interceptor() {
+        okHttpBuilder.addInterceptor(new Interceptor() {
             @Override
             public okhttp3.Response intercept(Chain chain) throws IOException {
                 Request request = chain.request();
@@ -86,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
 
         mRetrofit = new Retrofit.Builder()
                 .baseUrl(RIOT_BASE_URL)
-                .client(okhttpBuilder.build())
+                .client(okHttpBuilder.build())
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
 
@@ -136,11 +121,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<SummonerRank[]> call, Response<SummonerRank[]> response) {
                 if(response.code() == 200){
-                    SummonerRank[] s = response.body();
-                    mSummonerRank = s[0];
+                    SummonerRank[] summonerRank = response.body();
+                    if(summonerRank[0] != null){
+                        mSummonerRank = summonerRank[0];
 
-                    if(mSummonerRank != null){
-                        GetSummonerMatchListInformation();
+                        if(mSummonerRank != null){
+                            GetSummonerMatchListInformation();
+                        }
                     }
                 }
             }
@@ -154,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void GetSummonerMatchListInformation(){
         final int beginIndex = 0;
-        final int endIndex = 5;
+        final int endIndex = 50;
         Call<MatchList> matchListCall = mRiotApiInterface.getRecentMatchListForSummonerId(mSummoner.getAccountId(), beginIndex, endIndex);
         matchListCall.enqueue(new Callback<MatchList>() {
             @Override

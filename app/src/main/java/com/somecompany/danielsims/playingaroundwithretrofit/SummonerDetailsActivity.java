@@ -26,6 +26,9 @@ public class SummonerDetailsActivity extends AppCompatActivity {
     private TextView mFoundSummonerDivision;
     private TextView mFoundSummonerLp;
 
+    private TextView mFoundSummonerTotalWins;
+    private TextView mFoundSummonerTotalLosses;
+
     private Summoner mSummoner;
     private SummonerRank mSummonerRank;
     private MatchList mMatchList;
@@ -35,12 +38,15 @@ public class SummonerDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.acitivity_summoner_details_activity);
 
-        mFoundSummonerName = findViewById(R.id.FoundSummonerName);
-        mFoundSummonerLevel = findViewById(R.id.FoundSummonerLevel);
+        mFoundSummonerName = findViewById(R.id.found_summoner_name);
+        mFoundSummonerLevel = findViewById(R.id.found_summoner_level);
 
-        mFoundSummonerTier = findViewById(R.id.FoundSummonerTier);
-        mFoundSummonerDivision = findViewById(R.id.FoundSummonerDivision);
-        mFoundSummonerLp = findViewById(R.id.FoundSummonerLp);
+        mFoundSummonerTier = findViewById(R.id.found_summoner_tier);
+        mFoundSummonerDivision = findViewById(R.id.found_summoner_division);
+        mFoundSummonerLp = findViewById(R.id.found_summoner_lp);
+
+        mFoundSummonerTotalWins = findViewById(R.id.summoner_total_wins);
+        mFoundSummonerTotalLosses = findViewById(R.id.summoner_total_losses);
 
         RecyclerView matchRecyclerView = findViewById(R.id.matchlist_recyclerview);
 
@@ -55,6 +61,9 @@ public class SummonerDetailsActivity extends AppCompatActivity {
             mFoundSummonerTier.setText(mSummonerRank.getTier());
             mFoundSummonerDivision.setText(mSummonerRank.getRank());
             mFoundSummonerLp.setText(mSummonerRank.getLeaguePoints().toString());
+
+            mFoundSummonerTotalWins.setText(mSummonerRank.getWins().toString());
+            mFoundSummonerTotalLosses.setText(mSummonerRank.getLosses().toString());
 
             MatchListAdapter matchListAdapter = new MatchListAdapter(mMatchList.getMatches());
             matchRecyclerView.setAdapter(matchListAdapter);
