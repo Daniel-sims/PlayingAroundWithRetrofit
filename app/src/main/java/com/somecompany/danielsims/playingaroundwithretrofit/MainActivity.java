@@ -122,10 +122,10 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<SummonerRank[]> call, Response<SummonerRank[]> response) {
                 if(response.code() == 200){
                     SummonerRank[] summonerRank = response.body();
-                    if(summonerRank[0] != null){
+                    if(summonerRank != null && summonerRank.length > 0) {
                         mSummonerRank = summonerRank[0];
 
-                        if(mSummonerRank != null){
+                        if (mSummonerRank != null) {
                             GetSummonerMatchListInformation();
                         }
                     }

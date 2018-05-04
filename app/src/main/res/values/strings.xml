@@ -1,6 +1,4 @@
 <resources>
-    <string name="app_name">PlayingAroundWithRetrofit</string>
+    <string name="app_name">League Lookup Test App</string>
 
-    <string name="found_summoner_toast">Found Summoner!</string>
-    <string name="no_summoner_toast">No Summoner calls that</string>
 </resources>
